@@ -1,0 +1,5 @@
+Vagrantfile*
+!Vagrantfile-sample
+.vagrant
+chef/vendor/tmp
+chef/vendor/cookbooks

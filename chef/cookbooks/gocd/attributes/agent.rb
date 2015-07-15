@@ -1,0 +1,1 @@
+node.default['gocd']['agent']['server_url'] = 'localhost'

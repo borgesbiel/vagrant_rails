@@ -1,0 +1,68 @@
+#!/bin/sh
+
+### BEGIN INIT INFO
+# Provides:   mailcatcher
+# Required-Start: $remote_fs $syslog
+# Required-Stop:  $remote_fs $syslog
+# Should-Start:   $network
+# Should-Stop:    $network
+# Default-Start:  2 3 4 5
+# Default-Stop:   0 1 6
+# Short-Description:  Catches mail and serves it through a dream.
+# Description: MailCatcher runs a super simple SMTP server which catches any message sent to it to display in a web interface.
+### END INIT INFO
+
+PATH=/sbin:/bin:/usr/sbin:/usr/bin
+DAEMON=/opt/vagrant_ruby/bin/mailcatcher
+NAME=mailcatcher
+DESC=mailcatcher
+PIDFILE=/var/run/${NAME}.pid
+USER=vagrant
+
+test -x ${DAEMON} || exit 0
+
+set -e
+
+case "${1}" in
+  start)
+    echo -n "Starting ${DESC}: "
+
+    start-stop-daemon --start --quiet --pidfile ${PIDFILE} \
+      --chuid ${USER} --background --make-pidfile \
+      --exec ${DAEMON} -- --ip=0.0.0.0
+
+    echo "${NAME}."
+    ;;
+
+  stop)
+    echo -n "Stopping ${DESC}: "
+
+    start-stop-daemon --stop --quiet --pidfile ${PIDFILE} \
+      --oknodo
+
+    echo "${NAME}."
+    ;;
+
+  restart|force-reload)
+    echo -n "Restarting ${DESC}: "
+
+    start-stop-daemon --stop --quiet --pidfile ${PIDFILE} \
+      --oknodo
+
+    sleep 1
+
+    start-stop-daemon --start --quiet --pidfile ${PIDFILE} \
+      --chuid ${USER} --background --make-pidfile \
+      --exec ${DAEMON} -- --ip=0.0.0.0
+
+    echo "${NAME}."
+    ;;
+
+  *)
+    N=/etc/init.d/${NAME}
+    echo "Usage: ${NAME} {start|stop|restart|force-reload}" >&2
+    exit 1
+    ;;
+esac
+
+exit 0
